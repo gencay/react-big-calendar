@@ -38,6 +38,7 @@ function TimeGridEvent(props) {
   return (
     <EventWrapper type="time" {...props}>
       <div
+        tabIndex={0}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
         style={{
