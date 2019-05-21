@@ -151,7 +151,10 @@ class DayColumn extends React.Component {
           components={components}
           slotMetrics={slotMetrics}
         >
-          <div className={cn('rbc-events-container', rtl && 'rtl')}>
+          <div
+            tabIndex={0}
+            className={cn('rbc-events-container', rtl && 'rtl')}
+          >
             {this.renderEvents()}
           </div>
         </EventContainer>
