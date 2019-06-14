@@ -21,8 +21,8 @@ export default class TimeSlotGroup extends Component {
           return (
             <Wrapper key={idx} value={value} resource={resource}>
               <div
-                tabIndex={0}
                 {...slotProps}
+                data-time-id={value.getHours()}
                 className={cn('rbc-time-slot', slotProps.className)}
               >
                 {renderSlot && renderSlot(value, idx)}
