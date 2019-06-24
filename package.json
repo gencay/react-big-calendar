@@ -1,6 +1,6 @@
 {
-  "name": "react-big-calendar",
-  "version": "1.21.1-0",
+  "name": "gencay",
+  "version": "1.21.1",
   "description": "Calendar! with events",
   "author": "Jason Quense <monastic.panic@gmail.com>",
   "repository": "intljusticemission/react-big-calendar",
@@ -8,6 +8,9 @@
   "main": "lib/index.js",
   "module": "dist/react-big-calendar.esm.js",
   "style": "lib/css/react-big-calendar.css",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "files": [
     "lib/",
     "dist/",
