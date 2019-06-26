@@ -46,7 +46,7 @@ function TimeGridEvent(props) {
           ...userProps.style,
           top: `${top}%`,
           height: `${height}%`,
-          [isRtl ? 'right' : 'left']: `${Math.max(0, xOffset)}%`,
+          [isRtl ? 'right' : 'left']: `${Math.max(0.5, xOffset)}%`,
           width: `${width}%`,
         }}
         title={
