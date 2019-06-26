@@ -37,7 +37,8 @@ function TimeGridEvent(props) {
 
   return (
     <EventWrapper type="time" {...props}>
-      <div
+      <button
+        type="button"
         tabIndex={0}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
@@ -60,7 +61,7 @@ function TimeGridEvent(props) {
         })}
       >
         {inner}
-      </div>
+      </button>
     </EventWrapper>
   )
 }
