@@ -11,6 +11,7 @@ export default class TimeSlotGroup extends Component {
       resource,
       group,
       getters,
+      groupId,
       components: { timeSlotWrapper: Wrapper = BackgroundWrapper } = {},
     } = this.props
 
@@ -22,7 +23,7 @@ export default class TimeSlotGroup extends Component {
             <Wrapper key={idx} value={value} resource={resource}>
               <div
                 {...slotProps}
-                data-time-id={value.getHours()}
+                data-time-id={groupId * group.length + idx}
                 className={cn('rbc-time-slot', slotProps.className)}
               >
                 {renderSlot && renderSlot(value, idx)}
@@ -41,4 +42,5 @@ TimeSlotGroup.propTypes = {
   resource: PropTypes.any,
   components: PropTypes.object,
   getters: PropTypes.object,
+  groupId: PropTypes.number,
 }

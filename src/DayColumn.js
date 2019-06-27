@@ -138,6 +138,7 @@ class DayColumn extends React.Component {
           <TimeSlotGroup
             key={idx}
             group={grp}
+            groupId={idx}
             resource={resource}
             getters={getters}
             components={components}
