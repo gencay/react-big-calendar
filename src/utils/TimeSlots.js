@@ -129,13 +129,13 @@ export function getSlotMetrics({ min: start, max: end, step, timeslots }) {
       rangeEnd = dates.min(end, dates.max(start, rangeEnd))
 
       // add gap between time and the event slot
-      let start = rangeStart
-      let end = rangeEnd
-      start.setTime(rangeStart.getTime() + 1000 * 60 * 25)
-      end.setTime(rangeEnd.getTime() - 1000 * 60 * 15)
+      let mimicStart = rangeStart
+      let mimicEnd = rangeEnd
+      mimicStart.setTime(rangeStart.getTime() + 1000 * 60 * 5)
+      mimicEnd.setTime(rangeEnd.getTime() - 1000 * 60 * 5)
 
-      const rangeStartMin = positionFromDate(start)
-      const rangeEndMin = positionFromDate(end)
+      const rangeStartMin = positionFromDate(mimicStart)
+      const rangeEndMin = positionFromDate(mimicEnd)
       const top = (rangeStartMin / (step * numSlots)) * 100
 
       return {
