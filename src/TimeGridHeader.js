@@ -129,9 +129,13 @@ class TimeGridHeader extends React.Component {
     }
 
     const groupedEvents = resources.groupEvents(events)
+    var startOfDay = new Date()
+    startOfDay.setHours(0, 0, 0, 0)
 
     return (
       <div
+        tabIndex={0}
+        data-time={-1}
         style={style}
         ref={scrollRef}
         className={cn('rbc-time-header', isOverflowing && 'rbc-overflowing')}

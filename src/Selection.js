@@ -383,6 +383,19 @@ class Selection {
   }
 
   _keyListener(e) {
+    if (e.keyCode == '38' || e.keyCode == '40') {
+      e.preventDefault()
+
+      const activeElement = document.activeElement
+      // @ts-ignore
+      const dataTime = activeElement.dataset.time
+
+      if (dataTime === '-1') {
+        var foo = document.querySelector("[data-time='0']")
+        foo.focus()
+      }
+    }
+
     this.ctrl = e.metaKey || e.ctrlKey
   }
 
