@@ -43,6 +43,8 @@ const clickTolerance = 5
 const clickInterval = 250
 
 class Selection {
+  activeSlots = [0]
+
   constructor(node, { global = false, longPressThreshold = 250 } = {}) {
     this.container = node
     this.globalMouse = !node || global
@@ -53,7 +55,8 @@ class Selection {
     this._handleInitialEvent = this._handleInitialEvent.bind(this)
     this._handleMoveEvent = this._handleMoveEvent.bind(this)
     this._handleTerminatingEvent = this._handleTerminatingEvent.bind(this)
-    this._keyListener = this._keyListener.bind(this)
+    this._keyDownListener = this._keyDownListener.bind(this)
+    this._keyUpListener = this._keyUpListener.bind(this)
     this._dropFromOutsideListener = this._dropFromOutsideListener.bind(this)
 
     // Fixes an iOS 10 bug where scrolling could not be prevented on the window.
@@ -63,8 +66,8 @@ class Selection {
       () => {},
       window
     )
-    this._onKeyDownListener = addEventListener('keydown', this._keyListener)
-    this._onKeyUpListener = addEventListener('keyup', this._keyListener)
+    this._onKeyDownListener = addEventListener('keydown', this._keyDownListener)
+    this._onKeyUpListener = addEventListener('keyup', this._keyUpListener)
     this._onDropFromOutsideListener = addEventListener(
       'drop',
       this._dropFromOutsideListener
@@ -382,21 +385,69 @@ class Selection {
     e.preventDefault()
   }
 
-  _keyListener(e) {
-    if (e.keyCode == '38' || e.keyCode == '40') {
+  _keyDownListener(e) {
+    if (e.keyCode == '40' /** down arrow */) {
+      e.preventDefault()
+
+      const activeElement = document.activeElement
+      const dataTime = activeElement.dataset.time
+
+      if (dataTime != null) {
+        const lastSlot = this.activeSlots[this.activeSlots.length - 1]
+        if (dataTime === '-1') {
+          let element = document.querySelector(`[data-time='${lastSlot}']`)
+          element.focus()
+          element.classList.add('active-slot')
+          this.activeSlots.push(lastSlot + 1)
+        } else {
+          let element = document.querySelector(`[data-time='${lastSlot}']`)
+          element.classList.add('active-slot')
+          this.activeSlots.push(lastSlot + 1)
+        }
+      }
+    } else if (e.keyCode == '38' /** up arrow */) {
       e.preventDefault()
 
       const activeElement = document.activeElement
       // @ts-ignore
       const dataTime = activeElement.dataset.time
 
-      if (dataTime === '-1') {
-        var foo = document.querySelector("[data-time='0']")
-        foo.focus()
+      if (dataTime != null) {
+        const lastSlot = this.activeSlots[this.activeSlots.length - 1]
+        if (dataTime === '-1') {
+          let element = document.querySelector(`[data-time='${lastSlot}']`)
+          // @ts-ignore
+          element.focus()
+          element.classList.remove('active-slot')
+          this.activeSlots.pop()
+        } else {
+          let element = document.querySelector(`[data-time='${lastSlot}']`)
+          element.classList.remove('active-slot')
+          this.activeSlots.pop()
+        }
       }
     }
 
+    this._keyListener(e)
+  }
+
+  _keyUpListener(e) {
+    if (e.keyCode == '16' /** shift key */) {
+      this.clearActiveSlots()
+    }
+  }
+
+  _keyListener(e) {
     this.ctrl = e.metaKey || e.ctrlKey
+  }
+
+  clearActiveSlots() {
+    this.activeSlots.forEach(as => {
+      let element = document.querySelector(`[data-time='${as}']`)
+      element.classList.remove('active-slot')
+    })
+
+    this.activeSlots = [0]
   }
 
   isClick(pageX, pageY) {

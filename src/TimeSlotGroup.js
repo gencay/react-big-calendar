@@ -23,7 +23,7 @@ export default class TimeSlotGroup extends Component {
             <Wrapper key={idx} value={value} resource={resource}>
               <div
                 {...slotProps}
-                tabIndex={-1}
+                tabIndex={0}
                 data-time={groupId * group.length + idx}
                 className={cn('rbc-time-slot', slotProps.className)}
               >
