@@ -43,7 +43,7 @@ const clickTolerance = 5
 const clickInterval = 250
 
 class Selection {
-  activeSlots = [0]
+  activeSlots = [-1]
 
   constructor(node, { global = false, longPressThreshold = 250 } = {}) {
     this.container = node
@@ -387,54 +387,19 @@ class Selection {
 
   _keyDownListener(e) {
     if (e.keyCode == '40' /** down arrow */) {
-      e.preventDefault()
-
-      const activeElement = document.activeElement
-      const dataTime = activeElement.dataset.time
-
-      if (dataTime != null) {
-        const lastSlot = this.activeSlots[this.activeSlots.length - 1]
-        if (dataTime === '-1') {
-          let element = document.querySelector(`[data-time='${lastSlot}']`)
-          element.focus()
-          element.classList.add('active-slot')
-          this.activeSlots.push(lastSlot + 1)
-        } else {
-          let element = document.querySelector(`[data-time='${lastSlot}']`)
-          element.classList.add('active-slot')
-          this.activeSlots.push(lastSlot + 1)
-        }
-      }
+      this.moveDown(e)
     } else if (e.keyCode == '38' /** up arrow */) {
-      e.preventDefault()
-
-      const activeElement = document.activeElement
-      // @ts-ignore
-      const dataTime = activeElement.dataset.time
-
-      if (dataTime != null) {
-        const lastSlot = this.activeSlots[this.activeSlots.length - 1]
-        if (dataTime === '-1') {
-          let element = document.querySelector(`[data-time='${lastSlot}']`)
-          // @ts-ignore
-          element.focus()
-          element.classList.remove('active-slot')
-          this.activeSlots.pop()
-        } else {
-          let element = document.querySelector(`[data-time='${lastSlot}']`)
-          element.classList.remove('active-slot')
-          this.activeSlots.pop()
-        }
-      }
+      this.moveUp(e)
     }
 
     this._keyListener(e)
   }
 
   _keyUpListener(e) {
-    if (e.keyCode == '16' /** shift key */) {
-      this.clearActiveSlots()
-    }
+    this._keyListener(e)
+    // if (e.keyCode == '16' /** shift key */ || e.keyCode == '27') {
+    //   this.clearActiveSlots()
+    // }
   }
 
   _keyListener(e) {
@@ -442,12 +407,63 @@ class Selection {
   }
 
   clearActiveSlots() {
-    this.activeSlots.forEach(as => {
-      let element = document.querySelector(`[data-time='${as}']`)
-      element.classList.remove('active-slot')
+    const activeSlotElements = document.querySelectorAll('.active-slot')
+
+    activeSlotElements.forEach(as => {
+      as.classList.remove('active-slot')
     })
 
-    this.activeSlots = [0]
+    this.activeSlots = [-1]
+  }
+
+  moveDown(e) {
+    e.preventDefault()
+
+    const lastSlot = this.activeSlots[this.activeSlots.length - 1]
+    const newSlot = lastSlot + 1
+    let newElement = document.querySelector(`[data-time='${newSlot}']`)
+
+    if (newElement != null) {
+      if (e.shiftKey) {
+        this.activeSlots.push(newSlot)
+        newElement.classList.add('active-slot')
+        newElement.focus()
+      } else {
+        this.clearActiveSlots()
+        this.activeSlots = [newSlot]
+        newElement.classList.add('active-slot')
+        newElement.focus()
+      }
+    }
+  }
+
+  moveUp(e) {
+    e.preventDefault()
+
+    const activeElement = document.activeElement
+    const dataTime = activeElement.dataset.time
+
+    if (dataTime === '0') {
+      return
+    }
+
+    const lastSlot = this.activeSlots[this.activeSlots.length - 1]
+    const newSlot = lastSlot - 1
+    let lastElement = document.querySelector(`[data-time='${lastSlot}']`)
+    let newElement = document.querySelector(`[data-time='${newSlot}']`)
+
+    if (newElement != null) {
+      if (e.shiftKey) {
+        lastElement.classList.remove('active-slot')
+        this.activeSlots.pop()
+        newElement.focus()
+      } else {
+        this.clearActiveSlots()
+        this.activeSlots = [newSlot]
+        newElement.classList.add('active-slot')
+        newElement.focus()
+      }
+    }
   }
 
   isClick(pageX, pageY) {
