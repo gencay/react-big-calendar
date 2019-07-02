@@ -239,6 +239,7 @@ class DayColumn extends React.Component {
     let node = findDOMNode(this)
     let selector = (this._selector = new Selection(() => findDOMNode(this), {
       longPressThreshold: this.props.longPressThreshold,
+      component: 'DayColumn',
     }))
 
     let maybeSelect = box => {
@@ -324,12 +325,24 @@ class DayColumn extends React.Component {
       }
     })
 
-    selector.on('keyboardSelect', events => {
-      events = {
-        ...events,
-        endDate: dates.add(events.endDate, this.props.step, 'minutes'),
-      }
-      this._selectSlot({ ...this.state, action: 'select', events })
+    selector.on('keyboardSelect', obj => {
+      const startDate = obj.events.startDate
+      const endDate = dates.add(
+        obj.events.startDate,
+        this.props.step * obj.events.numberOfSlots,
+        'minutes'
+      )
+      // events = {
+      //   ...events,
+      //   endDate: dates.add(events.endDate, this.props.step, 'minutes'),
+      // }
+      this._selectSlot({
+        startDate,
+        endDate,
+        action: 'select',
+        bounds: {},
+        box: {},
+      })
     })
 
     selector.on('reset', () => {
@@ -398,6 +411,7 @@ DayColumn.propTypes = {
   selectable: PropTypes.oneOf([true, false, 'ignoreEvents']),
   eventOffset: PropTypes.number,
   longPressThreshold: PropTypes.number,
+  component: PropTypes.string,
 
   onSelecting: PropTypes.func,
   onSelectSlot: PropTypes.func.isRequired,

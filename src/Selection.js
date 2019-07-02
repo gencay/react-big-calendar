@@ -43,10 +43,14 @@ const clickTolerance = 5
 const clickInterval = 250
 
 class Selection {
-  constructor(node, { global = false, longPressThreshold = 250 } = {}) {
+  constructor(
+    node,
+    { global = false, longPressThreshold = 250, component = null } = {}
+  ) {
     this.container = node
     this.globalMouse = !node || global
     this.longPressThreshold = longPressThreshold
+    this.component = component
 
     this._listeners = Object.create(null)
 
@@ -424,8 +428,9 @@ class Selection {
       )
 
       return {
-        startDate: startElement.dataset.time,
+        startDate: new Date(startElement.dataset.time),
         endDate: endElement.dataset.time,
+        numberOfSlots: sortedEventSlots.length,
       }
     } else {
       return null

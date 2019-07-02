@@ -13,9 +13,7 @@ class Selectable extends React.Component {
   }
 
   handleSelect = ({ start, end }) => {
-    const title = window.prompt(
-      `Create event for between ${start.toTimeString()} and ${end.toTimeString()}`
-    )
+    const title = window.prompt(`Create event for between ${start} and ${end}`)
     if (title)
       this.setState({
         events: [
