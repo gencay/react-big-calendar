@@ -22,6 +22,7 @@ export default class TimeSlotGroup extends Component {
 
           if (groupId != null) {
             slotProps['data-time'] = value
+            slotProps['data-resource-id'] = resource
             slotProps['data-timeslot-id'] = groupId * group.length + idx
           }
 

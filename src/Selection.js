@@ -43,14 +43,10 @@ const clickTolerance = 5
 const clickInterval = 250
 
 class Selection {
-  constructor(
-    node,
-    { global = false, longPressThreshold = 250, component = null } = {}
-  ) {
+  constructor(node, { global = false, longPressThreshold = 250 } = {}) {
     this.container = node
     this.globalMouse = !node || global
     this.longPressThreshold = longPressThreshold
-    this.component = component
 
     this._listeners = Object.create(null)
 
@@ -420,16 +416,12 @@ class Selection {
     if (this.activeSlots.length > 0) {
       const sortedEventSlots = this.activeSlots.filter(as => as != -1).sort()
 
-      let startElement = document.querySelector(
+      let startTime = document.querySelector(
         `[data-timeslot-id='${sortedEventSlots[0]}']`
-      )
-      let endElement = document.querySelector(
-        `[data-timeslot-id='${sortedEventSlots[sortedEventSlots.length - 1]}']`
-      )
+      ).dataset.time
 
       return {
-        startDate: new Date(startElement.dataset.time),
-        endDate: endElement.dataset.time,
+        startDate: new Date(startTime),
         numberOfSlots: sortedEventSlots.length,
       }
     } else {
