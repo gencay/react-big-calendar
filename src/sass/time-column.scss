@@ -131,6 +131,10 @@
   &.rbc-now {
     font-weight: bold;
   }
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .rbc-day-header {

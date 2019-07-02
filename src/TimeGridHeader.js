@@ -134,7 +134,6 @@ class TimeGridHeader extends React.Component {
 
     return (
       <div
-        tabIndex={0}
         data-timeslot-id={-1}
         style={style}
         ref={scrollRef}
@@ -151,6 +150,7 @@ class TimeGridHeader extends React.Component {
           <div
             className="rbc-time-header-content"
             data-time-header-id={id || idx}
+            tabIndex={0}
             key={id || idx}
           >
             {resource && (
