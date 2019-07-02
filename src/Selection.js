@@ -421,13 +421,20 @@ class Selection {
 
     const lastSlot = this.activeSlots[this.activeSlots.length - 1]
     const newSlot = lastSlot + 1
+    let lastElement = document.querySelector(`[data-time='${lastSlot}']`)
     let newElement = document.querySelector(`[data-time='${newSlot}']`)
 
     if (newElement != null) {
       if (e.shiftKey) {
-        this.activeSlots.push(newSlot)
-        newElement.classList.add('active-slot')
-        newElement.focus()
+        if (newElement.classList.contains('active-slot')) {
+          this.activeSlots.pop()
+          lastElement.classList.remove('active-slot')
+          newElement.focus()
+        } else {
+          this.activeSlots.push(newSlot)
+          newElement.classList.add('active-slot')
+          newElement.focus()
+        }
       } else {
         this.clearActiveSlots()
         this.activeSlots = [newSlot]
@@ -454,9 +461,15 @@ class Selection {
 
     if (newElement != null) {
       if (e.shiftKey) {
-        lastElement.classList.remove('active-slot')
-        this.activeSlots.pop()
-        newElement.focus()
+        if (newElement.classList.contains('active-slot')) {
+          lastElement.classList.remove('active-slot')
+          this.activeSlots.pop()
+          newElement.focus()
+        } else {
+          newElement.classList.add('active-slot')
+          this.activeSlots.push(newSlot)
+          newElement.focus()
+        }
       } else {
         this.clearActiveSlots()
         this.activeSlots = [newSlot]
