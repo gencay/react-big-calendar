@@ -43,8 +43,6 @@ const clickTolerance = 5
 const clickInterval = 250
 
 class Selection {
-  activeSlots = [-1]
-
   constructor(node, { global = false, longPressThreshold = 250 } = {}) {
     this.container = node
     this.globalMouse = !node || global
@@ -73,6 +71,8 @@ class Selection {
       this._dropFromOutsideListener
     )
     this._addInitialEventListener()
+
+    this.activeSlots = [-1]
   }
 
   on(type, handler) {
@@ -106,6 +106,7 @@ class Selection {
     this._onMoveListener && this._onMoveListener.remove()
     this._onKeyUpListener && this._onKeyUpListener.remove()
     this._onKeyDownListener && this._onKeyDownListener.remove()
+    this.clearActiveSlots()
   }
 
   isSelected(node) {
@@ -251,6 +252,8 @@ class Selection {
       })
     )
 
+    this.clearActiveSlots()
+
     if (result === false) return
 
     switch (e.type) {
@@ -390,16 +393,43 @@ class Selection {
       this.moveDown(e)
     } else if (e.keyCode == '38' /** up arrow */) {
       this.moveUp(e)
+    } else if (e.keyCode == '13' || e.keyCode == '32') {
+      e.preventDefault()
     }
 
     this._keyListener(e)
   }
 
   _keyUpListener(e) {
-    this._keyListener(e)
-    // if (e.keyCode == '16' /** shift key */ || e.keyCode == '27') {
-    //   this.clearActiveSlots()
-    // }
+    if (e.keyCode == '27') {
+      this.clearActiveSlots()
+    } else if (e.keyCode == '13' || e.keyCode == '32') {
+      const events = this.activeEventSlots()
+      this.emit('keyboardSelect', {
+        events,
+      })
+      this.clearActiveSlots()
+    }
+  }
+
+  activeEventSlots() {
+    if (this.activeSlots.length > 0) {
+      const sortedEventSlots = this.activeSlots.filter(as => as != -1).sort()
+
+      let startElement = document.querySelector(
+        `[data-timeslot-id='${sortedEventSlots[0]}']`
+      )
+      let endElement = document.querySelector(
+        `[data-timeslot-id='${sortedEventSlots[sortedEventSlots.length - 1]}']`
+      )
+
+      return {
+        startDate: startElement.dataset.time,
+        endDate: endElement.dataset.time,
+      }
+    } else {
+      return null
+    }
   }
 
   _keyListener(e) {
@@ -421,8 +451,8 @@ class Selection {
 
     const lastSlot = this.activeSlots[this.activeSlots.length - 1]
     const newSlot = lastSlot + 1
-    let lastElement = document.querySelector(`[data-time='${lastSlot}']`)
-    let newElement = document.querySelector(`[data-time='${newSlot}']`)
+    let lastElement = document.querySelector(`[data-timeslot-id='${lastSlot}']`)
+    let newElement = document.querySelector(`[data-timeslot-id='${newSlot}']`)
 
     if (newElement != null) {
       if (e.shiftKey) {
@@ -448,7 +478,7 @@ class Selection {
     e.preventDefault()
 
     const activeElement = document.activeElement
-    const dataTime = activeElement.dataset.time
+    const dataTime = activeElement.dataset['timeslot-id']
 
     if (dataTime === '0') {
       return
@@ -456,8 +486,8 @@ class Selection {
 
     const lastSlot = this.activeSlots[this.activeSlots.length - 1]
     const newSlot = lastSlot - 1
-    let lastElement = document.querySelector(`[data-time='${lastSlot}']`)
-    let newElement = document.querySelector(`[data-time='${newSlot}']`)
+    let lastElement = document.querySelector(`[data-timeslot-id='${lastSlot}']`)
+    let newElement = document.querySelector(`[data-timeslot-id='${newSlot}']`)
 
     if (newElement != null) {
       if (e.shiftKey) {
@@ -487,8 +517,13 @@ class Selection {
         Math.abs(pageY - y) <= clickTolerance)
     )
   }
-}
 
+  triggerMouseEvent(node, eventType) {
+    var clickEvent = document.createEvent('MouseEvents')
+    clickEvent.initEvent(eventType, true, true)
+    node.dispatchEvent(clickEvent)
+  }
+}
 /**
  * Resolve the disance prop from either an Int or an Object
  * @return {Object}

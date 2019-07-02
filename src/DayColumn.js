@@ -111,6 +111,7 @@ class DayColumn extends React.Component {
       resource,
       accessors,
       localizer,
+      step,
       getters: { dayProp, ...getters },
       components: { eventContainerWrapper: EventContainer, ...components },
     } = this.props
@@ -138,6 +139,7 @@ class DayColumn extends React.Component {
           <TimeSlotGroup
             key={idx}
             group={grp}
+            step={step}
             groupId={idx}
             resource={resource}
             getters={getters}
@@ -320,6 +322,14 @@ class DayColumn extends React.Component {
         this._selectSlot({ ...this.state, action: 'select', bounds })
         this.setState({ selecting: false })
       }
+    })
+
+    selector.on('keyboardSelect', events => {
+      events = {
+        ...events,
+        endDate: dates.add(events.endDate, this.props.step, 'minutes'),
+      }
+      this._selectSlot({ ...this.state, action: 'select', events })
     })
 
     selector.on('reset', () => {

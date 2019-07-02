@@ -21,7 +21,8 @@ export default class TimeSlotGroup extends Component {
           const slotProps = getters ? getters.slotProp(value, resource) : {}
 
           if (groupId != null) {
-            slotProps['data-time'] = groupId * group.length + idx
+            slotProps['data-time'] = value
+            slotProps['data-timeslot-id'] = groupId * group.length + idx
           }
 
           return (

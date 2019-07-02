@@ -135,7 +135,7 @@ class TimeGridHeader extends React.Component {
     return (
       <div
         tabIndex={0}
-        data-time={-1}
+        data-timeslot-id={-1}
         style={style}
         ref={scrollRef}
         className={cn('rbc-time-header', isOverflowing && 'rbc-overflowing')}
