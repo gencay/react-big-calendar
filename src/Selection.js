@@ -418,7 +418,7 @@ class Selection {
   }
 
   activeEventSlots() {
-    if (this.activeSlots == null || this.activeEventSlots.length === 0) {
+    if (this.activeSlots == null || this.activeSlots.length === 0) {
       return null
     }
 
