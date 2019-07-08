@@ -417,24 +417,31 @@ class Selection {
   }
 
   activeEventSlots() {
-    if (this.activeSlots.length > 0) {
-      const sortedEventSlots = this.activeSlots
-        .filter(as => as != -1)
-        .sort((a, b) => {
-          return +a - +b
-        })
+    if (this.activeSlots == null || this.activeEventSlots.length === 0) {
+      return null
+    }
 
-      let startTime = document.querySelector(
-        `[data-timeslot-id='${sortedEventSlots[0]}']`
-      ).dataset.time
+    const sortedEventSlots = this.activeSlots
+      .filter(as => as != -1)
+      .sort((a, b) => {
+        return +a - +b
+      })
+
+    const slotElement = this.findSlotElement(
+      this.resourceId,
+      sortedEventSlots[0]
+    )
+
+    if (slotElement != null) {
+      const startTime = slotElement.dataset.time
 
       return {
         startDate: new Date(startTime),
         numberOfSlots: sortedEventSlots.length,
       }
-    } else {
-      return null
     }
+
+    return null
   }
 
   _keyListener(e) {
@@ -456,8 +463,8 @@ class Selection {
 
     const lastSlot = this.activeSlots[this.activeSlots.length - 1]
     const newSlot = lastSlot + 1
-    let lastElement = document.querySelector(`[data-timeslot-id='${lastSlot}']`)
-    let newElement = document.querySelector(`[data-timeslot-id='${newSlot}']`)
+    let lastElement = this.findSlotElement(this.resourceId, lastSlot)
+    let newElement = this.findSlotElement(this.resourceId, newSlot)
 
     if (newElement != null) {
       if (e.shiftKey) {
@@ -483,16 +490,16 @@ class Selection {
     e.preventDefault()
 
     const activeElement = document.activeElement
-    const dataTime = activeElement.dataset['timeslot-id']
+    const dataTime = activeElement.dataset['time-header-id']
 
-    if (dataTime === '0') {
+    if (dataTime == null || dataTime === '0') {
       return
     }
 
     const lastSlot = this.activeSlots[this.activeSlots.length - 1]
     const newSlot = lastSlot - 1
-    let lastElement = document.querySelector(`[data-timeslot-id='${lastSlot}']`)
-    let newElement = document.querySelector(`[data-timeslot-id='${newSlot}']`)
+    let lastElement = this.findSlotElement(this.resourceId, lastSlot)
+    let newElement = this.findSlotElement(this.resourceId, newSlot)
 
     if (newElement != null) {
       if (e.shiftKey) {
@@ -527,6 +534,16 @@ class Selection {
     var clickEvent = document.createEvent('MouseEvents')
     clickEvent.initEvent(eventType, true, true)
     node.dispatchEvent(clickEvent)
+  }
+
+  findSlotElement(resourceId, slotId) {
+    try {
+      return document
+        .querySelector(`[data-resource-id='${resourceId}']`)
+        .querySelector(`[data-timeslot-id='${slotId}']`)
+    } catch {
+      return null
+    }
   }
 }
 /**
