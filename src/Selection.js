@@ -51,6 +51,7 @@ class Selection {
     this.globalMouse = !node || global
     this.longPressThreshold = longPressThreshold
     this.resourceId = resourceId
+    this.activeResource = null
 
     this._listeners = Object.create(null)
 
@@ -461,6 +462,17 @@ class Selection {
   moveDown(e) {
     e.preventDefault()
 
+    const activeElement = document.activeElement
+    const dataTimeHeaderId = activeElement.dataset['time-header-id']
+    const dataResourceId = activeElement.dataset['resource-id']
+
+    if (
+      dataTimeHeaderId != this.resourceId &&
+      dataResourceId != this.resourceId
+    ) {
+      return
+    }
+
     const lastSlot = this.activeSlots[this.activeSlots.length - 1]
     const newSlot = lastSlot + 1
     let lastElement = this.findSlotElement(this.resourceId, lastSlot)
@@ -490,9 +502,13 @@ class Selection {
     e.preventDefault()
 
     const activeElement = document.activeElement
-    const dataTime = activeElement.dataset['time-header-id']
+    const dataTimeHeaderId = activeElement.dataset['time-header-id']
+    const dataResourceId = activeElement.dataset['resource-id']
 
-    if (dataTime == null || dataTime === '0') {
+    if (
+      dataTimeHeaderId != this.resourceId &&
+      dataResourceId != this.resourceId
+    ) {
       return
     }
 
