@@ -414,7 +414,11 @@ class Selection {
 
   activeEventSlots() {
     if (this.activeSlots.length > 0) {
-      const sortedEventSlots = this.activeSlots.filter(as => as != -1).sort()
+      const sortedEventSlots = this.activeSlots
+        .filter(as => as != -1)
+        .sort((a, b) => {
+          return +a - +b
+        })
 
       let startTime = document.querySelector(
         `[data-timeslot-id='${sortedEventSlots[0]}']`

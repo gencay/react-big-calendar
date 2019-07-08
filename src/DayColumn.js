@@ -330,7 +330,7 @@ class DayColumn extends React.Component {
     })
 
     selector.on('keyboardSelect', obj => {
-      if (obj && obj.event) {
+      if (obj && obj.events) {
         const startDate = obj.events.startDate
         const endDate = dates.add(
           obj.events.startDate,
