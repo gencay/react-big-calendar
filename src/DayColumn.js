@@ -227,6 +227,7 @@ class DayColumn extends React.Component {
           event={event}
           label={label}
           key={'evt_' + idx}
+          step={step}
           getters={getters}
           isRtl={isRtl}
           components={components}

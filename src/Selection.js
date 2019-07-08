@@ -393,6 +393,21 @@ class Selection {
     e.preventDefault()
   }
 
+  isClick(pageX, pageY) {
+    let { x, y, isTouch } = this._initialEventData
+    return (
+      !isTouch &&
+      (Math.abs(pageX - x) <= clickTolerance &&
+        Math.abs(pageY - y) <= clickTolerance)
+    )
+  }
+
+  triggerMouseEvent(node, eventType) {
+    var clickEvent = document.createEvent('MouseEvents')
+    clickEvent.initEvent(eventType, true, true)
+    node.dispatchEvent(clickEvent)
+  }
+
   _keyDownListener(e) {
     if (e.keyCode == '40' /** down arrow */) {
       this.moveDown(e)
@@ -473,6 +488,13 @@ class Selection {
       return
     }
 
+    // if moving off of an event handle and bypass the regular navigation
+    const eventId = activeElement.dataset.eventId
+    if (eventId != null) {
+      this.activateSlotByTime(activeElement.dataset.previousSlotTime)
+      return
+    }
+
     const lastSlot = this.activeSlots[this.activeSlots.length - 1]
     const newSlot = lastSlot + 1
     let lastElement = this.findSlotElement(this.resourceId, lastSlot)
@@ -512,6 +534,13 @@ class Selection {
       return
     }
 
+    // if moving off of an event handle and bypass the regular navigation
+    const eventId = activeElement.dataset.eventId
+    if (eventId != null) {
+      this.activateSlotByTime(activeElement.dataset.previousSlotTime)
+      return
+    }
+
     const lastSlot = this.activeSlots[this.activeSlots.length - 1]
     const newSlot = lastSlot - 1
     let lastElement = this.findSlotElement(this.resourceId, lastSlot)
@@ -537,25 +566,23 @@ class Selection {
     }
   }
 
-  isClick(pageX, pageY) {
-    let { x, y, isTouch } = this._initialEventData
-    return (
-      !isTouch &&
-      (Math.abs(pageX - x) <= clickTolerance &&
-        Math.abs(pageY - y) <= clickTolerance)
+  activateSlotByTime(eventTime) {
+    const slotElement = document.querySelector(
+      `[data-resource-id='${this.resourceId}'][data-time='${eventTime}']`
     )
+
+    if (slotElement != null) {
+      this.clearActiveSlots()
+      this.activeSlots.push(+slotElement.dataset.timeslotId)
+      slotElement.classList.add('active-slot')
+      slotElement.focus()
+    }
   }
 
-  triggerMouseEvent(node, eventType) {
-    var clickEvent = document.createEvent('MouseEvents')
-    clickEvent.initEvent(eventType, true, true)
-    node.dispatchEvent(clickEvent)
-  }
-
-  findSlotElement(resourceId, slotId) {
+  getSlotById(slotId) {
     try {
       return document.querySelector(
-        `[data-resource-id='${resourceId}'][data-timeslot-id='${slotId}']`
+        `[data-resource-id='${this.resourceId}'][data-timeslot-id='${slotId}']`
       )
     } catch {
       return null

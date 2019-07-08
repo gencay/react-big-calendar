@@ -16,12 +16,14 @@ function TimeGridEvent(props) {
     getters,
     onClick,
     onDoubleClick,
+    step,
     components: { event: Event, eventWrapper: EventWrapper },
   } = props
   let title = accessors.title(event)
   let tooltip = accessors.tooltip(event)
   let end = accessors.end(event)
   let start = accessors.start(event)
+  let resource = accessors.resource(event)
 
   let userProps = getters.eventProp(event, start, end, selected)
 
@@ -35,6 +37,16 @@ function TimeGridEvent(props) {
     </div>,
   ]
 
+  var stepLengthInMs = 1000 * 60 * step
+  var previousSlotTime = new Date(
+    Math.floor(start.getTime() / stepLengthInMs) * stepLengthInMs
+  )
+
+  // NOTE: subtracting 1 to floor nearest slot instead of next slot
+  var nextSlotTime = new Date(
+    Math.floor((end.getTime() - 1) / stepLengthInMs) * stepLengthInMs
+  )
+
   return (
     <EventWrapper type="time" {...props}>
       <button
@@ -42,6 +54,10 @@ function TimeGridEvent(props) {
         tabIndex={0}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
+        data-resource-id={resource}
+        data-previous-slot-time={previousSlotTime}
+        data-next-slot-time={nextSlotTime}
+        data-event-id={props.event && props.event.id}
         style={{
           ...userProps.style,
           top: `${top}%`,
