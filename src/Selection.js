@@ -554,9 +554,9 @@ class Selection {
 
   findSlotElement(resourceId, slotId) {
     try {
-      return document
-        .querySelector(`[data-resource-id='${resourceId}']`)
-        .querySelector(`[data-timeslot-id='${slotId}']`)
+      return document.querySelector(
+        `[data-resource-id='${resourceId}'][data-timeslot-id='${slotId}']`
+      )
     } catch {
       return null
     }
