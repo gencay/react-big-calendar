@@ -488,7 +488,7 @@ class Selection {
     // if moving off of an event handle and bypass the regular navigation
     const eventId = activeElement.dataset.eventId
     if (eventId != null) {
-      this.activateSlotByTime(activeElement.dataset.previousSlotTime)
+      this.activateSlotByTime(activeElement.dataset.nextSlotTime)
       return
     }
 
