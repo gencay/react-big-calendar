@@ -463,8 +463,8 @@ class Selection {
     e.preventDefault()
 
     const activeElement = document.activeElement
-    const dataTimeHeaderId = activeElement.dataset['time-header-id']
-    const dataResourceId = activeElement.dataset['resource-id']
+    const dataTimeHeaderId = activeElement.dataset.timeHeaderId
+    const dataResourceId = activeElement.dataset.resourceId
 
     if (
       dataTimeHeaderId != this.resourceId &&
@@ -502,8 +502,8 @@ class Selection {
     e.preventDefault()
 
     const activeElement = document.activeElement
-    const dataTimeHeaderId = activeElement.dataset['time-header-id']
-    const dataResourceId = activeElement.dataset['resource-id']
+    const dataTimeHeaderId = activeElement.dataset.timeHeaderId
+    const dataResourceId = activeElement.dataset.resourceId
 
     if (
       dataTimeHeaderId != this.resourceId &&
