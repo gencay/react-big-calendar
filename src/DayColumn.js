@@ -126,6 +126,7 @@ class DayColumn extends React.Component {
     return (
       <div
         style={style}
+        data-dayslot-resource-id={this.props.resource || ''}
         className={cn(
           className,
           'rbc-day-slot',
@@ -244,6 +245,7 @@ class DayColumn extends React.Component {
     let node = findDOMNode(this)
     let selector = (this._selector = new Selection(() => findDOMNode(this), {
       longPressThreshold: this.props.longPressThreshold,
+      resourceId: this.props.resource,
     }))
 
     let maybeSelect = box => {
@@ -414,6 +416,7 @@ DayColumn.propTypes = {
   selectable: PropTypes.oneOf([true, false, 'ignoreEvents']),
   eventOffset: PropTypes.number,
   longPressThreshold: PropTypes.number,
+  resourceId: PropTypes.string,
 
   onSelecting: PropTypes.func,
   onSelectSlot: PropTypes.func.isRequired,
