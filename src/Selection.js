@@ -406,7 +406,7 @@ class Selection {
   }
 
   _keyUpListener(e) {
-    if (e.keyCode == '27') {
+    if (e.keyCode == '27' || e.keyCode == '9') {
       this.clearActiveSlots()
     } else if (e.keyCode == '13' || e.keyCode == '32') {
       const events = this.activeEventSlots()
