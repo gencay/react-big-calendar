@@ -443,10 +443,7 @@ class Selection {
         return +a - +b
       })
 
-    const slotElement = this.findSlotElement(
-      this.resourceId,
-      sortedEventSlots[0]
-    )
+    const slotElement = this.getSlotById(sortedEventSlots[0])
 
     if (slotElement != null) {
       const startTime = slotElement.dataset.time
@@ -497,8 +494,8 @@ class Selection {
 
     const lastSlot = this.activeSlots[this.activeSlots.length - 1]
     const newSlot = lastSlot + 1
-    let lastElement = this.findSlotElement(this.resourceId, lastSlot)
-    let newElement = this.findSlotElement(this.resourceId, newSlot)
+    let lastElement = this.getSlotById(lastSlot)
+    let newElement = this.getSlotById(newSlot)
 
     if (newElement != null) {
       if (e.shiftKey) {
@@ -543,8 +540,8 @@ class Selection {
 
     const lastSlot = this.activeSlots[this.activeSlots.length - 1]
     const newSlot = lastSlot - 1
-    let lastElement = this.findSlotElement(this.resourceId, lastSlot)
-    let newElement = this.findSlotElement(this.resourceId, newSlot)
+    let lastElement = this.getSlotById(lastSlot)
+    let newElement = this.getSlotById(newSlot)
 
     if (newElement != null) {
       if (e.shiftKey) {
