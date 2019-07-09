@@ -413,8 +413,6 @@ class Selection {
       this.moveDown(e)
     } else if (e.keyCode == '38' /** up arrow */) {
       this.moveUp(e)
-    } else if (e.keyCode == '13' || e.keyCode == '32') {
-      e.preventDefault()
     }
 
     this._keyListener(e)
