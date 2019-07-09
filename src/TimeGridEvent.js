@@ -21,6 +21,7 @@ function TimeGridEvent(props) {
   } = props
   let title = accessors.title(event)
   let tooltip = accessors.tooltip(event)
+  let ariaLabel = accessors.ariaLabel(event)
   let end = accessors.end(event)
   let start = accessors.start(event)
   let resource = accessors.resource(event)
@@ -37,13 +38,13 @@ function TimeGridEvent(props) {
     </div>,
   ]
 
-  var stepLengthInMs = 1000 * 60 * step
-  var previousSlotTime = new Date(
+  const stepLengthInMs = 1000 * 60 * step
+  const previousSlotTime = new Date(
     Math.floor(start.getTime() / stepLengthInMs) * stepLengthInMs
   )
 
   // NOTE: subtracting 1 to floor nearest slot instead of next slot
-  var nextSlotTime = new Date(
+  const nextSlotTime = new Date(
     Math.floor((end.getTime() - 1) / stepLengthInMs) * stepLengthInMs
   )
 
@@ -70,6 +71,7 @@ function TimeGridEvent(props) {
             ? (typeof label === 'string' ? label + ': ' : '') + tooltip
             : undefined
         }
+        aria-label={ariaLabel}
         className={cn('rbc-event', className, userProps.className, {
           'rbc-selected': selected,
           'rbc-event-continues-earlier': continuesEarlier,
