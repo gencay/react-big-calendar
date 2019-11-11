@@ -18,34 +18,27 @@ class Event {
     this.top = top
     this.height = height
     this.data = data
+
+    this.column = 0
+    this.totalColumns = 1
   }
 
   /**
    * The event's width without any overlap.
    */
   get _width() {
+    let availableWidth = 100
+    if (this.container) {
+      availableWidth = 100 - (this.container._width + this.container.xOffset)
+    }
+
     // The container event's width is determined by the maximum number of
     // events in any of its rows.
-    if (this.rows) {
-      const columns =
-        this.rows.reduce(
-          (max, row) => Math.max(max, row.leaves.length + 1), // add itself
-          0
-        ) + 1 // add the container
-
-      return 100 / columns
+    if (this.totalColumns - this.column > 0) {
+      return availableWidth / (this.totalColumns - this.column)
     }
 
-    const availableWidth = 100 - this.container._width
-
-    // The row event's width is the space left by the container, divided
-    // among itself and its leaves.
-    if (this.leaves) {
-      return availableWidth / (this.leaves.length + 1)
-    }
-
-    // The leaf event's width is determined by its row's width
-    return this.row._width
+    return availableWidth
   }
 
   /**
@@ -57,45 +50,31 @@ class Event {
     const overlap = Math.min(100, this._width)
 
     // Containers can always grow.
-    if (this.rows) {
+    if (!this.container && this.rows && this.rows.length > 0) {
       return overlap
     }
 
     // Rows can grow if they have leaves.
-    if (this.leaves) {
-      return this.leaves.length > 0 ? overlap : noOverlap
+    if (this.container && this.rows) {
+      return this.rows.length > 0 ? overlap : noOverlap
     }
 
     // Leaves can grow unless they're the last item in a row.
-    const { leaves } = this.row
-    const index = leaves.indexOf(this)
-    return index === leaves.length - 1 ? noOverlap : overlap
+    if (this.row) {
+      const { leaves } = this.row
+      const index = leaves.indexOf(this)
+      return index === leaves.length - 1 ? noOverlap : overlap
+    }
+    return noOverlap
   }
 
   get xOffset() {
-    // Containers have no offset.
-    if (this.rows) return 0
+    if (this.container) {
+      return this.container._width + this.container.xOffset
+    }
 
-    // Rows always start where their container ends.
-    if (this.leaves) return this.container._width
-
-    // Leaves are spread out evenly on the space left by its row.
-    const { leaves, xOffset, _width } = this.row
-    const index = leaves.indexOf(this) + 1
-    return xOffset + index * _width
+    return 0
   }
-}
-
-/**
- * Return true if event a and b is considered to be on the same row.
- */
-function onSameRow(a, b, minimumStartDifference) {
-  return (
-    // Occupies the same start slot.
-    Math.abs(b.start - a.start) < minimumStartDifference ||
-    // A's start slot overlaps with b's end slot.
-    (b.start > a.start && b.start < a.end)
-  )
 }
 
 function sortByRender(events) {
@@ -106,10 +85,15 @@ function sortByRender(events) {
     const event = sortedByTime.shift()
     sorted.push(event)
 
+    // let lastEndms = event.endMs;
     for (let i = 0; i < sortedByTime.length; i++) {
       const test = sortedByTime[i]
 
       // Still inside this event, look for next.
+      // if (lastEndms > test.startMs) {
+      //   lastEndms = Math.max(lastEndms, test.endMs);
+      //   continue;
+      // }
       if (event.endMs > test.startMs) continue
 
       // We've found the first event of the next event group.
@@ -126,6 +110,57 @@ function sortByRender(events) {
   }
 
   return sorted
+}
+
+function findContainers(eventToFind, events, minimumStartDifference) {
+  const resultContiners = []
+  let q = []
+  let vertices = new Map()
+
+  events.forEach(e => {
+    q.push(e)
+    if (!vertices.has(e)) {
+      vertices.set(e, e)
+    }
+  })
+
+  while (q.length > 0) {
+    let container = q.shift()
+    if (containsEvent(eventToFind, container, minimumStartDifference)) {
+      resultContiners.push(container)
+    }
+    if (container.rows) {
+      container.rows.forEach(r => {
+        if (!vertices.has(r)) {
+          q.push(r)
+          vertices.set(r, r)
+        }
+      })
+    }
+  }
+
+  return resultContiners
+}
+
+function containsEvent(event, container, minimumStartDifference) {
+  return (
+    (container.end > event.start && event.end > container.start) ||
+    Math.abs(event.start - container.start) < minimumStartDifference
+  )
+}
+
+function updateTotalColumnsOnAncestors(container, totalColumns) {
+  if (container) {
+    container.totalColumns = totalColumns
+    if (
+      container.matchingContainers &&
+      container.matchingContainers.length > 0
+    ) {
+      container.matchingContainers.forEach(c => {
+        updateTotalColumnsOnAncestors(c, totalColumns)
+      })
+    }
+  }
 }
 
 function getStyledEvents({
@@ -149,40 +184,39 @@ function getStyledEvents({
     const event = eventsInRenderOrder[i]
 
     // Check if this event can go into a container event.
-    const container = containerEvents.find(
-      c =>
-        c.end > event.start ||
-        Math.abs(event.start - c.start) < minimumStartDifference
+    const matchingContainers = findContainers(
+      event,
+      containerEvents,
+      minimumStartDifference
     )
 
     // Couldn't find a container — that means this event is a container.
-    if (!container) {
+    if (!matchingContainers.length) {
       event.rows = []
+      event.column = 0
       containerEvents.push(event)
       continue
     }
 
-    // Found a container for the event.
-    event.container = container
-
-    // Check if the event can be placed in an existing row.
-    // Start looking from behind.
-    let row = null
-    for (let j = container.rows.length - 1; !row && j >= 0; j--) {
-      if (onSameRow(container.rows[j], event, minimumStartDifference)) {
-        row = container.rows[j]
+    // find the max column container
+    let maxColumnContainer = matchingContainers[0]
+    matchingContainers.forEach(c => {
+      if (c.column > maxColumnContainer.column) {
+        maxColumnContainer = c
       }
-    }
+    })
 
-    if (row) {
-      // Found a row, so add it.
-      row.leaves.push(event)
-      event.row = row
-    } else {
-      // Couldn't find a row – that means this event is a row.
-      event.leaves = []
-      container.rows.push(event)
-    }
+    maxColumnContainer.rows = maxColumnContainer.rows || []
+    maxColumnContainer.rows.push(event)
+
+    event.column = maxColumnContainer.column + 1
+    matchingContainers.forEach(c => {
+      updateTotalColumnsOnAncestors(c, event.column + 1)
+    })
+
+    // Found a container for the event.
+    event.container = maxColumnContainer
+    event.matchingContainers = matchingContainers
   }
 
   // Return the original events, along with their styles.

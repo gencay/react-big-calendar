@@ -21,6 +21,7 @@ describe('getStyledEvents', () => {
         const results = styledEvents.map(result => ({
           width: Math.floor(result.style.width),
           xOffset: Math.floor(result.style.xOffset),
+          id: result.event.id,
         }))
         expect(results).toEqual(expectedResults)
       })
@@ -87,6 +88,40 @@ describe('getStyledEvents', () => {
           { width: 33, xOffset: 0 },
           { width: 33, xOffset: 33 },
           { width: 33, xOffset: 66 },
+        ],
+      ],
+      [
+        'cascade of overlapping events',
+        [
+          { start: d(11), end: d(12), id: 'test1' },
+          { start: d(11, 30), end: d(15, 30), id: 'test2' },
+          { start: d(13), end: d(13, 30), id: 'test3' },
+          { start: d(14), end: d(14, 30), id: 'test4' },
+          { start: d(12), end: d(13, 0), id: 'test5' },
+        ],
+        [
+          { width: 33, xOffset: 0, id: 'test1' },
+          { width: 33, xOffset: 0, id: 'test5' },
+          { width: 33, xOffset: 33, id: 'test2' },
+          { width: 33, xOffset: 66, id: 'test3' },
+          { width: 33, xOffset: 66, id: 'test4' },
+        ],
+      ],
+      [
+        'cascade of overlapping events with stair stepping overlap',
+        [
+          { start: d(11), end: d(12, 30), id: 'test1' },
+          { start: d(11, 30), end: d(15, 30), id: 'test2' },
+          { start: d(11, 30), end: d(12, 30), id: 'test3' },
+          { start: d(12, 30), end: d(13, 0), id: 'test4' },
+          { start: d(14), end: d(15, 30), id: 'test5' },
+        ],
+        [
+          { width: 33, xOffset: 0, id: 'test1' },
+          { width: 33, xOffset: 0, id: 'test4' },
+          { width: 33, xOffset: 33, id: 'test2' },
+          { width: 33, xOffset: 66, id: 'test3' },
+          { width: 33, xOffset: 66, id: 'test5' },
         ],
       ],
     ]
