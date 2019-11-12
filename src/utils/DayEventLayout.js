@@ -85,15 +85,10 @@ function sortByRender(events) {
     const event = sortedByTime.shift()
     sorted.push(event)
 
-    // let lastEndms = event.endMs;
     for (let i = 0; i < sortedByTime.length; i++) {
       const test = sortedByTime[i]
 
       // Still inside this event, look for next.
-      // if (lastEndms > test.startMs) {
-      //   lastEndms = Math.max(lastEndms, test.endMs);
-      //   continue;
-      // }
       if (event.endMs > test.startMs) continue
 
       // We've found the first event of the next event group.
