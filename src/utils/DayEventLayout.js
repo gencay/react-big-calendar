@@ -108,7 +108,7 @@ function sortByRender(events) {
 }
 
 function findContainers(eventToFind, events, minimumStartDifference) {
-  const resultContiners = []
+  const resultContainers = []
   let q = []
   let vertices = new Map()
 
@@ -122,7 +122,7 @@ function findContainers(eventToFind, events, minimumStartDifference) {
   while (q.length > 0) {
     let container = q.shift()
     if (containsEvent(eventToFind, container, minimumStartDifference)) {
-      resultContiners.push(container)
+      resultContainers.push(container)
     }
     if (container.rows) {
       container.rows.forEach(r => {
@@ -134,7 +134,7 @@ function findContainers(eventToFind, events, minimumStartDifference) {
     }
   }
 
-  return resultContiners
+  return resultContainers
 }
 
 function containsEvent(event, container, minimumStartDifference) {
