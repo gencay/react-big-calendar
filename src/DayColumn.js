@@ -97,7 +97,7 @@ class DayColumn extends React.Component {
     const current = getNow()
 
     if (current >= min && current <= max) {
-      const { top } = this.slotMetrics.getRange(current, current)
+      const top = this.slotMetrics.getCurrentTimePosition(current)
       this.setState({ timeIndicatorPosition: top })
     } else {
       this.clearTimeIndicatorInterval()
@@ -282,11 +282,16 @@ class DayColumn extends React.Component {
         getBoundsForNode(node)
       )
 
-      if (!this.state.selecting) this._initialSlot = currentSlot
+      if (!this.state.selecting) {
+        this._initialSlot = currentSlot
+      }
 
       let initialSlot = this._initialSlot
-      if (initialSlot === currentSlot)
-        currentSlot = this.slotMetrics.nextSlot(initialSlot)
+      if (dates.lte(initialSlot, currentSlot)) {
+        currentSlot = this.slotMetrics.nextSlot(currentSlot)
+      } else if (dates.gt(initialSlot, currentSlot)) {
+        initialSlot = this.slotMetrics.nextSlot(initialSlot)
+      }
 
       const selectRange = this.slotMetrics.getRange(
         dates.min(initialSlot, currentSlot),
