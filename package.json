@@ -1,6 +1,6 @@
 {
   "name": "rbc-with-a11y",
-  "version": "1.21.37",
+  "version": "1.22.0",
   "description": "Calendar! with events",
   "author": "Ali Gencay <gencay.ali@hotmail.com>",
   "repository": "intljusticemission/react-big-calendar",
