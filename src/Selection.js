@@ -478,8 +478,6 @@ class Selection {
   }
 
   moveDown(e) {
-    e.preventDefault()
-
     const activeElement = document.activeElement
     const dataTimeHeaderId = activeElement.dataset.timeHeaderId
     const dataResourceId = activeElement.dataset.resourceId
@@ -541,8 +539,6 @@ class Selection {
   }
 
   moveUp(e) {
-    e.preventDefault()
-
     const activeElement = document.activeElement
     const dataTimeHeaderId = activeElement.dataset.timeHeaderId
     const dataResourceId = activeElement.dataset.resourceId
